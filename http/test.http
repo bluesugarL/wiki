@@ -8,3 +8,7 @@ Content-Type: application/x-www-form-urlencoded
 name=yuri
 
 ###
+GET http://localhost:10880/test/list
+Accept: application/json
+
+###

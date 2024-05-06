@@ -1,5 +1,6 @@
 package com.aiit.wiki.config;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
@@ -9,6 +10,7 @@ import org.springframework.core.env.Environment;
 
 @ComponentScan("com.aiit")
 @SpringBootApplication
+@MapperScan("com.aiit.wiki.mapper")
 public class WikiApplication {
 
     //public static void main(String[] args) {
