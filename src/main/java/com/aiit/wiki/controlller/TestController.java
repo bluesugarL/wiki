@@ -12,12 +12,12 @@ public class TestController {
     private String findNp;
 
     @GetMapping("/hello")
-    public String hello(){
-        return "hello"+"\t"+findNp;
+    public String hello() {
+        return "hello" + "\t" + findNp;
     }
 
     @PostMapping("hi")
-    public String hi(String name){
-        return "hi"+"\t"+name;
+    public String hi(String name) {
+        return "hi" + "\t" + name;
     }
 }
