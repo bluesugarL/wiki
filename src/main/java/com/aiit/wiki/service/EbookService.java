@@ -5,7 +5,7 @@ import com.aiit.wiki.domain.EbookExample;
 import com.aiit.wiki.mapper.EbookMapper;
 import com.aiit.wiki.req.EbookReq;
 import com.aiit.wiki.resp.EbookResp;
-import org.springframework.beans.BeanUtils;
+import com.aiit.wiki.util.CopyUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -18,6 +18,7 @@ public class EbookService {
     @Resource
     private EbookMapper ebookMapper;
 
+    //参数不直接使用实体类ebook
     public List<EbookResp> list(EbookReq ebookReq){
         EbookExample ebookExample = new EbookExample();
         //创建内部类
@@ -26,14 +27,20 @@ public class EbookService {
         List<Ebook> ebookList = ebookMapper.selectByExample(ebookExample);
         //创建一个泛型参数为EbookResp集合
         List<EbookResp> respList=new ArrayList<>();
+
         //遍历查询完结果的集合ebookList
-        for (Ebook ebook : ebookList) {
-            //创建符合respList集合泛型参参数的对象
-            EbookResp ebookResp = new EbookResp();
-            //完成对象的复制
-            BeanUtils.copyProperties(ebook,ebookResp);
-            respList.add(ebookResp);
-        }
+        //for (Ebook ebook : ebookList) {
+        //    //创建符合respList集合泛型参参数的对象
+        //    //EbookResp ebookResp = new EbookResp();
+        //    ////完成对象的复制
+        //    //BeanUtils.copyProperties(ebook,ebookResp);
+        //    /*
+        //    使用自定义工具类 copyutil
+        //    */
+        //    EbookResp ebookResp = CopyUtil.copy(ebook, EbookResp.class);
+        //    respList.add(ebookResp);
+        //}
+        respList = CopyUtil.copyList(ebookList, EbookResp.class);
         return respList;
     }
 }
