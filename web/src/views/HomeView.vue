@@ -10,7 +10,7 @@
         <a-sub-menu key="sub1">
           <template #title>
               <span>
-                <user-outlined />
+                <user-outlined/>
                 subnav 1111
               </span>
           </template>
@@ -22,7 +22,7 @@
         <a-sub-menu key="sub2">
           <template #title>
               <span>
-                <laptop-outlined />
+                <laptop-outlined/>
                 subnav 2
               </span>
           </template>
@@ -34,7 +34,7 @@
         <a-sub-menu key="sub3">
           <template #title>
               <span>
-                <notification-outlined />
+                <notification-outlined/>
                 subnav 3
               </span>
           </template>
@@ -48,24 +48,35 @@
     <a-layout-content
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
-      Content
+      <pre>
+      {{ ebooks }}
+      </pre>
     </a-layout-content>
   </a-layout>
 </template>
 
 <script lang="ts">
-import {defineComponent} from 'vue';
+//ref 用于创建一个响应式的引用(reference)对象。
+import {defineComponent, onMounted, ref} from 'vue';
 import axios from "axios";
 
 export default defineComponent({
   name: 'HomeView',
-  components: {
-  },
-  setup(){
+  components: {},
+  setup() {
     console.log("yuri")
-    axios.get("http://localhost:10880/ebook/list?name=spring").then((response)=>{
-      console.log(response)
+    const ebooks = ref();
+    onMounted(() => {
+      axios.get("http://localhost:10880/ebook/list?name=spring").then((response) => {
+        const data = response.data;
+        ebooks.value = data.content
+        console.log(response)
+      })
     })
+    return {
+      ebooks
+    }
   }
+
 });
 </script>
