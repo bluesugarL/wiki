@@ -48,7 +48,7 @@
     <a-layout-content
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
-      <a-list  :grid="{ gutter: 16, column: 3 }" item-layout="vertical" size="large"  :data-source="ebooks">
+      <a-list :grid="{ gutter: 16, column: 3 }" item-layout="vertical" size="large" :data-source="ebooks">
         <template #footer>
           <div>
             <b>ant design vue</b>
@@ -136,3 +136,12 @@ export default defineComponent({
 
 });
 </script>
+
+<style scoped>
+.ant-avatar {
+  width: 50px;
+  height: 50px;
+  line-height: 50px;
+  border-radius: 8%;
+  margin: 5px 0;
+}</style>
