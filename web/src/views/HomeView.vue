@@ -55,10 +55,17 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue';
+import axios from "axios";
 
 export default defineComponent({
   name: 'HomeView',
   components: {
   },
+  setup(){
+    console.log("yuri")
+    axios.get("http://localhost:10880/ebook/list?name=spring").then((response)=>{
+      console.log(response)
+    })
+  }
 });
 </script>
