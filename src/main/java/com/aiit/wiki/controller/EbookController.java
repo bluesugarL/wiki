@@ -1,4 +1,4 @@
-package com.aiit.wiki.controlller;
+package com.aiit.wiki.controller;
 
 import com.aiit.wiki.req.EbookReq;
 import com.aiit.wiki.resp.CommonResp;

@@ -1,4 +1,4 @@
-package com.aiit.wiki.controlller;
+package com.aiit.wiki.controller;
 
 import com.aiit.wiki.domain.Demo;
 import com.aiit.wiki.service.DemoService;
