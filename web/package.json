@@ -13,11 +13,13 @@
     "@ant-design/icons-vue": "^7.0.1",
     "ant-design-vue": "^3.2.20",
     "axios": "^1.6.8",
+    "lodash-es": "^4.17.21",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
     "vuex": "^4.0.0"
   },
   "devDependencies": {
+    "@types/lodash-es": "^4.17.12",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
     "@vue/cli-plugin-eslint": "~5.0.0",

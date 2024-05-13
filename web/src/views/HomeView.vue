@@ -80,7 +80,6 @@
 </template>
 
 <script lang="ts">
-//ref 用于创建一个响应式的引用(reference)对象。
 import {defineComponent, onMounted, ref} from 'vue';
 import axios from "axios";
 
