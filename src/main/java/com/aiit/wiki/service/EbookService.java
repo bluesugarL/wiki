@@ -5,6 +5,7 @@ import com.aiit.wiki.domain.EbookExample;
 import com.aiit.wiki.mapper.EbookMapper;
 import com.aiit.wiki.req.EbookReq;
 import com.aiit.wiki.resp.EbookResp;
+import com.aiit.wiki.resp.PageResp;
 import com.aiit.wiki.util.CopyUtil;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -26,7 +27,7 @@ public class EbookService {
     private static final Logger logger = LoggerFactory.getLogger(EbookService.class);
 
     //参数不直接使用实体类ebook
-    public List<EbookResp> list(EbookReq ebookReq) {
+    public PageResp<EbookResp> list(EbookReq ebookReq) {
 
         EbookExample ebookExample = new EbookExample();
         //创建内部类
@@ -36,7 +37,7 @@ public class EbookService {
             criteria.andNameLike("%" + ebookReq.getName() + "%");
         }
         //pagehelper分页只会对遇到的第一个查询语句生效
-        PageHelper.startPage(1, 3);
+        PageHelper.startPage(ebookReq.getPage(), ebookReq.getSize());
         List<Ebook> ebookList = ebookMapper.selectByExample(ebookExample);
 
         PageInfo<Ebook> pageInfo = new PageInfo<>(ebookList);
@@ -58,8 +59,12 @@ public class EbookService {
         //    EbookResp ebookResp = CopyUtil.copy(ebook, EbookResp.class);
         //    respList.add(ebookResp);
         //}
-
         respList = CopyUtil.copyList(ebookList, EbookResp.class);
-        return respList;
+
+        PageResp<EbookResp> pageResp = new PageResp<>();
+        pageResp.setTotal(pageInfo.getTotal());
+        pageResp.setList(respList);
+
+        return pageResp;
     }
 }
