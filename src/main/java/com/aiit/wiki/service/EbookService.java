@@ -3,8 +3,9 @@ package com.aiit.wiki.service;
 import com.aiit.wiki.domain.Ebook;
 import com.aiit.wiki.domain.EbookExample;
 import com.aiit.wiki.mapper.EbookMapper;
-import com.aiit.wiki.req.EbookReq;
-import com.aiit.wiki.resp.EbookResp;
+import com.aiit.wiki.req.EbookQueryReq;
+import com.aiit.wiki.req.EbookSaveReq;
+import com.aiit.wiki.resp.EbookQueryResp;
 import com.aiit.wiki.resp.PageResp;
 import com.aiit.wiki.util.CopyUtil;
 import com.github.pagehelper.PageHelper;
@@ -27,7 +28,7 @@ public class EbookService {
     private static final Logger logger = LoggerFactory.getLogger(EbookService.class);
 
     //参数不直接使用实体类ebook
-    public PageResp<EbookResp> list(EbookReq ebookReq) {
+    public PageResp<EbookQueryResp> list(EbookQueryReq ebookReq) {
 
         EbookExample ebookExample = new EbookExample();
         //创建内部类
@@ -45,7 +46,7 @@ public class EbookService {
         logger.info("总页数：{}", pageInfo.getPages());
 
         //创建一个泛型参数为EbookResp集合
-        List<EbookResp> respList = new ArrayList<>();
+        List<EbookQueryResp> respList = new ArrayList<>();
 
         //遍历查询完结果的集合ebookList
         //for (Ebook ebook : ebookList) {
@@ -59,12 +60,25 @@ public class EbookService {
         //    EbookResp ebookResp = CopyUtil.copy(ebook, EbookResp.class);
         //    respList.add(ebookResp);
         //}
-        respList = CopyUtil.copyList(ebookList, EbookResp.class);
+        respList = CopyUtil.copyList(ebookList, EbookQueryResp.class);
 
-        PageResp<EbookResp> pageResp = new PageResp<>();
+        PageResp<EbookQueryResp> pageResp = new PageResp<>();
         pageResp.setTotal(pageInfo.getTotal());
         pageResp.setList(respList);
 
         return pageResp;
+    }
+
+    /**
+     * 保存
+     */
+    public void save(EbookSaveReq req) {
+        Ebook ebook = CopyUtil.copy(req, Ebook.class);
+        if (ObjectUtils.isEmpty(req.getId())) {
+            //新增
+        } else {
+            //更新
+            ebookMapper.updateByPrimaryKey(ebook);
+        }
     }
 }
