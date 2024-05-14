@@ -13,7 +13,7 @@
             @change="handleTableChange"
             bordered>
           <template #cover="{ text: cover}">
-            <img v-if="cover" :src="cover" alt="avatar"/>
+            <img v-if="cover" :src="cover" alt="avatar" width="60px"/>
           </template>
           <template v-slot:action="{ text, record }">
             <a-space size="small">
