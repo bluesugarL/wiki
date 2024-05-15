@@ -8,6 +8,7 @@ import com.aiit.wiki.req.EbookSaveReq;
 import com.aiit.wiki.resp.EbookQueryResp;
 import com.aiit.wiki.resp.PageResp;
 import com.aiit.wiki.util.CopyUtil;
+import com.aiit.wiki.util.SnowFlake;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.slf4j.Logger;
@@ -24,6 +25,9 @@ public class EbookService {
 
     @Resource
     private EbookMapper ebookMapper;
+
+    @Resource
+    private SnowFlake snowFlake;
 
     private static final Logger logger = LoggerFactory.getLogger(EbookService.class);
 
@@ -76,6 +80,9 @@ public class EbookService {
         Ebook ebook = CopyUtil.copy(req, Ebook.class);
         if (ObjectUtils.isEmpty(req.getId())) {
             //新增
+            long id = snowFlake.nextId();
+            ebook.setId(id);
+            ebookMapper.insert(ebook);
         } else {
             //更新
             ebookMapper.updateByPrimaryKey(ebook);
