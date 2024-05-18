@@ -32,4 +32,12 @@ public class EbookController {
         return resp;
     }
 
+    @DeleteMapping("/delete/{id}")
+    public CommonResp delete(@PathVariable Long id) {
+        CommonResp resp = new CommonResp<>();
+        System.out.println("当前获取的id为："+id);//error
+        ebookService.deleteBook(id);
+        return resp;
+    }
+
 }

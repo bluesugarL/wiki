@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -49,22 +48,8 @@ public class EbookService {
         logger.info("总行数：{}", pageInfo.getTotal());//
         logger.info("总页数：{}", pageInfo.getPages());
 
-        //创建一个泛型参数为EbookResp集合
-        List<EbookQueryResp> respList = new ArrayList<>();
 
-        //遍历查询完结果的集合ebookList
-        //for (Ebook ebook : ebookList) {
-        //    //创建符合respList集合泛型参参数的对象
-        //    //EbookResp ebookResp = new EbookResp();
-        //    ////完成对象的复制
-        //    //BeanUtils.copyProperties(ebook,ebookResp);
-        //    /*
-        //    使用自定义工具类 copyutil
-        //    */
-        //    EbookResp ebookResp = CopyUtil.copy(ebook, EbookResp.class);
-        //    respList.add(ebookResp);
-        //}
-        respList = CopyUtil.copyList(ebookList, EbookQueryResp.class);
+        List<EbookQueryResp> respList = CopyUtil.copyList(ebookList, EbookQueryResp.class);
 
         PageResp<EbookQueryResp> pageResp = new PageResp<>();
         pageResp.setTotal(pageInfo.getTotal());
@@ -80,12 +65,16 @@ public class EbookService {
         Ebook ebook = CopyUtil.copy(req, Ebook.class);
         if (ObjectUtils.isEmpty(req.getId())) {
             //新增
-            long id = snowFlake.nextId();
-            ebook.setId(id);
+            ebook.setId(snowFlake.nextId());
+            System.out.println("雪花生成ID："+ebook.getId());//right
             ebookMapper.insert(ebook);
         } else {
             //更新
             ebookMapper.updateByPrimaryKey(ebook);
         }
+    }
+
+    public void deleteBook(Long id){
+        ebookMapper.deleteByPrimaryKey(id);
     }
 }

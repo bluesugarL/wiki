@@ -1,4 +1,4 @@
-GET http://localhost:10880/ebook/list?page=1&size=4
+GET http://localhost:10880/ebook/list
 Accept: application/json
 
 ###

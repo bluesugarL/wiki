@@ -5,7 +5,7 @@
     >
       <div class="about">
         <p>
-          <a-button type="primary" @click="add">
+          <a-button type="primary" @click="add()">
             新增
           </a-button>
         </p>
@@ -25,9 +25,17 @@
               <a-button type="primary" @click="edit(record)">
                 编辑
               </a-button>
+
+              <a-popconfirm
+                  title="删除后不可恢复，确认删除?"
+                  ok-text="是"
+                  cancel-text="否"
+                  @confirm="deleteBook(record.id)"
+              >
               <a-button type="danger">
                 删除
               </a-button>
+              </a-popconfirm>
             </a-space>
           </template>
         </a-table>
@@ -39,7 +47,7 @@
       v-model:visible="modalVisible"
       :confirm-loading="modalLoading"
       @ok="handleModalOk">
-    <a-form :model="ebook" :label-col="{span:6}">
+    <a-form :model="ebook" :label-col="{span:6}" :wrapper-col="{ span: 18 }">
       <a-form-item label="封面">
         <a-input v-model:value="ebook.cover"/>
       </a-form-item>
@@ -53,7 +61,7 @@
         <a-input v-model:value="ebook.category2Id"/>
       </a-form-item>
       <a-form-item label="描述">
-        <a-input v-model:value="ebook.des" type="text"/>
+        <a-input v-model:value="ebook.description" type="text"/>
       </a-form-item>
     </a-form>
   </a-modal>
@@ -63,6 +71,7 @@
 <script lang="ts">
 import {defineComponent, onMounted, ref} from 'vue';
 import axios from 'axios';
+import {message} from "ant-design-vue";
 
 export default defineComponent({
       name: 'AdminEbook',
@@ -70,7 +79,7 @@ export default defineComponent({
         const ebooks = ref();
         const pagination = ref({
           current: 1,
-          pageSize: 4,
+          pageSize: 10,
           total: 0
         });
         const loading = ref(false);
@@ -138,28 +147,29 @@ export default defineComponent({
           console.log("看看自带的分页参数都有啥：" + pagination);
           handleQuery({
             page: pagination.current,
-            size: pagination.pagesize
+            size: pagination.pageSize
           });
         };
 
-        //表单
-        const ebook = ref({});
+        //--------表单----------
+        const ebook = ref();
         const modalVisible = ref(false);
         const modalLoading = ref(false);
 
+        //保存
         const handleModalOk = () => {
           modalLoading.value = true;
           axios.post("/ebook/save", ebook.value).then((response) => {
+            modalLoading.value = false;
             const data = response.data;
             if (data.success) {
               modalVisible.value = false;
-              modalLoading.value = false;
+              //刷新当前列表
+              handleQuery({
+                page: pagination.value.current,
+                size: pagination.value.pageSize
+              });
             }
-            //刷新当前列表
-            handleQuery({
-              page: pagination.value.current,
-              size: pagination.value.pageSize
-            });
           });
         };
 
@@ -175,6 +185,24 @@ export default defineComponent({
           ebook.value = {}
         };
 
+        //删除
+        //todo id +2
+        const deleteBook = (id: number) => {
+          axios.delete("/ebook/delete/" + id).then((response) => {
+            const data = response.data;
+            if (data.success) {
+              //刷新当前列表
+              handleQuery({
+                page: pagination.value.current,
+                size: pagination.value.pageSize
+              });
+            }
+            else {
+              message.error(data.message)
+            }
+          });
+        };
+
         onMounted(() => {
           handleQuery({
             page: 1,
@@ -188,6 +216,7 @@ export default defineComponent({
           columns,
           loading,
           handleTableChange,
+          deleteBook,
 
           edit,
           add,
