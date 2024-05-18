@@ -40,5 +40,4 @@ public class EbookController {
         ebookService.deleteBook(id);
         return resp;
     }
-
 }
