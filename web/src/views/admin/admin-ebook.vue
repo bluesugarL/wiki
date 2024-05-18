@@ -32,9 +32,9 @@
                   cancel-text="否"
                   @confirm="deleteBook(record.id)"
               >
-              <a-button type="danger">
-                删除
-              </a-button>
+                <a-button type="danger">
+                  删除
+                </a-button>
               </a-popconfirm>
             </a-space>
           </template>
@@ -72,6 +72,7 @@
 import {defineComponent, onMounted, ref} from 'vue';
 import axios from 'axios';
 import {message} from "ant-design-vue";
+
 
 export default defineComponent({
       name: 'AdminEbook',
@@ -135,10 +136,15 @@ export default defineComponent({
           }).then((response) => {
             loading.value = false;
             const data = response.data;
-            ebooks.value = data.content.list;
-            //重置分页按钮
-            pagination.value.current = params.page;
-            pagination.value.total = data.content.total;
+            if (data.success) {
+              ebooks.value = data.content.list;
+              //重置分页按钮
+              pagination.value.current = params.page;
+              pagination.value.total = data.content.total;
+            }
+            else {
+              message.error(data.message)
+            }
           });
         };
 
@@ -196,8 +202,7 @@ export default defineComponent({
                 page: pagination.value.current,
                 size: pagination.value.pageSize
               });
-            }
-            else {
+            } else {
               message.error(data.message)
             }
           });
