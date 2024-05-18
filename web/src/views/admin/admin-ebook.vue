@@ -176,6 +176,9 @@ export default defineComponent({
                 size: pagination.value.pageSize
               });
             }
+            else {
+              message.error(data.message)
+            }
           });
         };
 
@@ -192,7 +195,6 @@ export default defineComponent({
         };
 
         //删除
-        //todo id +2
         const deleteBook = (id: number) => {
           axios.delete("/ebook/delete/" + id).then((response) => {
             const data = response.data;
