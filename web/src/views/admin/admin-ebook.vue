@@ -70,10 +70,13 @@
         <a-input v-model:value="ebook.name"/>
       </a-form-item>
       <a-form-item label="分类一">
-        <a-input v-model:value="ebook.category1Id"/>
-      </a-form-item>
-      <a-form-item label="分类二">
-        <a-input v-model:value="ebook.category2Id"/>
+        <a-cascader
+            v-model:value="categoryIds"
+            :options="options"
+            :field-names="{label:'name',value:'id',children:'children'}"
+            :option="level1"
+            placeholder="Please select"
+        />
       </a-form-item>
       <a-form-item label="描述">
         <a-input v-model:value="ebook.description" type="text"/>
@@ -176,6 +179,7 @@ export default defineComponent({
         };
 
         //--------表单----------
+        const categoryIds=ref();
         const ebook = ref();
         const modalVisible = ref(false);
         const modalLoading = ref(false);
@@ -183,6 +187,8 @@ export default defineComponent({
         //保存
         const handleModalOk = () => {
           modalLoading.value = true;
+          ebook.value.category1Id=categoryIds.value[0];
+          ebook.value.category2Id=categoryIds.value[1];
           axios.post("/ebook/save", ebook.value).then((response) => {
             modalLoading.value = false;
             const data = response.data;
@@ -204,6 +210,7 @@ export default defineComponent({
           modalVisible.value = true;
           //实现编辑时复制对象，修改表单不影响数据
           ebook.value = Tool.copy(record);
+          categoryIds.value=[ebook.value.category1Id,ebook.value.category2Id]
         };
 
         //新增
@@ -228,8 +235,28 @@ export default defineComponent({
           });
         };
 
+        const level1 = ref(); //一级分类树，chiLdren属性就是二级分类
+        //数据查询
+        const handleQueryCategory = () => {
+          loading.value = true;
+          axios.get("/category/all").then((response) => {
+            loading.value = false;
+            const data = response.data;
+            if (data.success) {
+              const categorys = data.content;
+              console.log("原始数组:", categorys);
+              level1.value = [];
+              //递归
+              level1.value = Tool.array2Tree(categorys, 0);
+              console.log("树形结构：", level1);
+            } else {
+              message.error(data.message)
+            }
+          });
+        };
 
         onMounted(() => {
+          handleQueryCategory();
           handleQuery({
             page: 1,
             size: pagination.value.pageSize
@@ -246,13 +273,16 @@ export default defineComponent({
           deleteBook,
           handleQuery,
 
+          //方法
           edit,
           add,
 
           ebook,
           modalVisible,
           modalLoading,
-          handleModalOk
+          handleModalOk,
+          categoryIds,
+          level1
         }
       }
     }
