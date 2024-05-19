@@ -40,6 +40,11 @@
           </template>
           <template v-slot:action="{ text, record }">
             <a-space size="small">
+              <router-link to="/admin/doc">
+              <a-button type="primary">
+                文档管理
+              </a-button>
+              </router-link>
               <a-button type="primary" @click="edit(record)">
                 编辑
               </a-button>
@@ -144,7 +149,7 @@ export default defineComponent({
         //数据查询
         const handleQuery = (params: any) => {
           loading.value = true;
-          ebooks.value=[];
+          ebooks.value = [];
           axios.get("/ebook/list", {
             params: {
               page: params.page,
@@ -232,7 +237,7 @@ export default defineComponent({
         };
 
         const level1 = ref();
-        let categorys:any;
+        let categorys: any;
         //数据查询
         const handleQueryCategory = () => {
           loading.value = true;
@@ -259,7 +264,7 @@ export default defineComponent({
           });
         };
 
-        const getCategoryName=(cid:number)=>{
+        const getCategoryName = (cid: number) => {
           // console.log(cid)
           let result = "";
           categorys.forEach((item: any) => {
