@@ -40,6 +40,9 @@ public class EbookService {
             //查询到的结果不为空就按条件去查询对应电子书
             criteria.andNameLike("%" + ebookReq.getName() + "%");
         }
+        if (!ObjectUtils.isEmpty(ebookReq.getCategoryId2())) {
+            criteria.andCategory2IdEqualTo( ebookReq.getCategoryId2());
+        }
         //pagehelper分页只会对遇到的第一个查询语句生效
         PageHelper.startPage(ebookReq.getPage(), ebookReq.getSize());
         List<Ebook> ebookList = ebookMapper.selectByExample(ebookExample);
