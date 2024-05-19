@@ -50,6 +50,7 @@
         <!--<table tableName="user"/>-->
         <!--todo-->
         <!--<table tableName="demo"/>-->
-        <table tableName="ebook"/>
+        <!--<table tableName="ebook"/>-->
+        <table tableName="category"/>
     </context>
 </generatorConfiguration>
