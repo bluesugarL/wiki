@@ -7,16 +7,6 @@
         <p>
           <a-form layout="inline" :model="param">
             <a-form-item>
-              <a-input v-model:value="param.name" placeholder="名称">
-              </a-input>
-            </a-form-item>
-            <a-form-item>
-              <a-button type="primary"
-                        @click="handleQuery()">
-                查询
-              </a-button>
-            </a-form-item>
-            <a-form-item>
               <a-button type="primary" @click="add()">
                 新增
               </a-button>
@@ -26,7 +16,7 @@
         <a-table
             :columns="columns"
             :row-key="record => record.id"
-            :data-source="categorys"
+            :data-source="level1"
             :loading="Loading"
             :pagination="false"
             bordered>
@@ -86,7 +76,7 @@ export default defineComponent({
       name: 'AdminCategory',
       setup() {
         const param = ref();
-        param.value={};
+        param.value = {};
         const categorys = ref();
         const loading = ref(false);
 
@@ -113,6 +103,17 @@ export default defineComponent({
 
         ];
 
+        /*一级分类树
+        [{
+          id:"",
+          name:"",
+          children:[{
+            id:"",
+            name:"",
+          }]
+        }]
+         */
+        const level1 = ref(); //一级分类树，chiLdren属性就是二级分类
         //数据查询
         const handleQuery = () => {
           loading.value = true;
@@ -121,6 +122,11 @@ export default defineComponent({
             const data = response.data;
             if (data.success) {
               categorys.value = data.content;
+              console.log("原始数组:", categorys.value);
+              level1.value = [];
+              //递归
+              level1.value = Tool.array2Tree(categorys.value, 0);
+              console.log("树形结构：", level1);
             } else {
               message.error(data.message)
             }
@@ -182,7 +188,7 @@ export default defineComponent({
 
         return {
           param,
-          categorys,
+          level1,
           columns,
           loading,
           deleteBook,
