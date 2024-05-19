@@ -35,12 +35,14 @@
           <template #cover="{ text: cover}">
             <img v-if="cover" :src="cover" alt="avatar" width="60px"/>
           </template>
+          <template v-slot:category="{ text, record }">
+            <span>{{ getCategoryName(record.category1Id) }} / {{ getCategoryName(record.category2Id) }}</span>
+          </template>
           <template v-slot:action="{ text, record }">
             <a-space size="small">
               <a-button type="primary" @click="edit(record)">
                 编辑
               </a-button>
-
               <a-popconfirm
                   title="删除后不可恢复，确认删除?"
                   ok-text="是"
@@ -69,12 +71,11 @@
       <a-form-item label="名称">
         <a-input v-model:value="ebook.name"/>
       </a-form-item>
-      <a-form-item label="分类一">
+      <a-form-item label="分类">
         <a-cascader
             v-model:value="categoryIds"
-            :options="options"
-            :field-names="{label:'name',value:'id',children:'children'}"
-            :option="level1"
+            :field-names="{label: 'name',value: 'id',children: 'children'}"
+            :options="level1"
             placeholder="Please select"
         />
       </a-form-item>
@@ -97,7 +98,7 @@ export default defineComponent({
       name: 'AdminEbook',
       setup() {
         const param = ref();
-        param.value={};
+        param.value = {};
         const ebooks = ref();
         const pagination = ref({
           current: 1,
@@ -117,14 +118,8 @@ export default defineComponent({
             dataIndex: 'name'
           },
           {
-            title: '分类一',
-            key: 'category1Id',
-            dataIndex: 'category1Id'
-          },
-          {
-            title: '分类二',
-            key: 'category2Id',
-            dataIndex: 'category2Id'
+            title: '分类',
+            slots: {customRender: 'category'}
           },
           {
             title: '文档数',
@@ -179,7 +174,7 @@ export default defineComponent({
         };
 
         //--------表单----------
-        const categoryIds=ref();
+        const categoryIds = ref();
         const ebook = ref();
         const modalVisible = ref(false);
         const modalLoading = ref(false);
@@ -187,8 +182,8 @@ export default defineComponent({
         //保存
         const handleModalOk = () => {
           modalLoading.value = true;
-          ebook.value.category1Id=categoryIds.value[0];
-          ebook.value.category2Id=categoryIds.value[1];
+          ebook.value.category1Id = categoryIds.value[0];
+          ebook.value.category2Id = categoryIds.value[1];
           axios.post("/ebook/save", ebook.value).then((response) => {
             modalLoading.value = false;
             const data = response.data;
@@ -210,7 +205,7 @@ export default defineComponent({
           modalVisible.value = true;
           //实现编辑时复制对象，修改表单不影响数据
           ebook.value = Tool.copy(record);
-          categoryIds.value=[ebook.value.category1Id,ebook.value.category2Id]
+          categoryIds.value = [ebook.value.category1Id, ebook.value.category2Id]
         };
 
         //新增
@@ -235,7 +230,8 @@ export default defineComponent({
           });
         };
 
-        const level1 = ref(); //一级分类树，chiLdren属性就是二级分类
+        const level1 = ref();
+        let categorys:any;
         //数据查询
         const handleQueryCategory = () => {
           loading.value = true;
@@ -243,7 +239,7 @@ export default defineComponent({
             loading.value = false;
             const data = response.data;
             if (data.success) {
-              const categorys = data.content;
+              categorys = data.content;
               console.log("原始数组:", categorys);
               level1.value = [];
               //递归
@@ -254,6 +250,18 @@ export default defineComponent({
             }
           });
         };
+
+        const getCategoryName=(cid:number)=>{
+          // console.log(cid)
+          let result = "";
+          categorys.forEach((item: any) => {
+            if (item.id === cid) {
+              // return item.name; // 注意，这里直接return不起作用
+              result = item.name;
+            }
+          });
+          return result;
+        }
 
         onMounted(() => {
           handleQueryCategory();
@@ -272,6 +280,7 @@ export default defineComponent({
           handleTableChange,
           deleteBook,
           handleQuery,
+          getCategoryName,
 
           //方法
           edit,
