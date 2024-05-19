@@ -30,6 +30,14 @@ public class CategoryService {
 
     private static final Logger logger = LoggerFactory.getLogger(CategoryService.class);
 
+    public List<CategoryQueryResp> allList() {
+        CategoryExample categoryExample = new CategoryExample();
+        categoryExample.setOrderByClause("sort asc");
+        List<Category> categoryList = categoryMapper.selectByExample(categoryExample);
+        List<CategoryQueryResp> respList = CopyUtil.copyList(categoryList, CategoryQueryResp.class);
+        return respList;
+    }
+
     //参数不直接使用实体类category
     public PageResp<CategoryQueryResp> list(CategoryQueryReq categoryReq) {
 

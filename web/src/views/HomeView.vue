@@ -49,12 +49,6 @@
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '280px' }"
     >
       <a-list :grid="{ gutter: 16, column: 3 }" item-layout="vertical" size="large" :data-source="ebooks">
-        <template #footer>
-          <div>
-            <b>ant design vue</b>
-            footer part
-          </div>
-        </template>
         <template #renderItem="{ item }">
           <a-list-item key="item.name">
             <template #actions>
