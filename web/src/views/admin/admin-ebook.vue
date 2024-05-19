@@ -144,6 +144,7 @@ export default defineComponent({
         //数据查询
         const handleQuery = (params: any) => {
           loading.value = true;
+          ebooks.value=[];
           axios.get("/ebook/list", {
             params: {
               page: params.page,
