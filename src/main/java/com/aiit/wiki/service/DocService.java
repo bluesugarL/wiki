@@ -79,7 +79,11 @@ public class DocService {
         }
     }
 
-    public void deleteBook(Long id){
-        docMapper.deleteByPrimaryKey(id);
+    public void deleteBook(List<String> ids){
+        DocExample docExample = new DocExample();
+        //创建内部类
+        DocExample.Criteria criteria = docExample.createCriteria();
+        criteria.andIdIn(ids);
+        docMapper.deleteByExample(docExample);
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -26,6 +27,7 @@ public class DocController {
         resp.setContent(list);
         return resp;
     }
+
     @GetMapping("/list")
     public CommonResp list(@Valid DocQueryReq docReq) {
         CommonResp<PageResp<DocQueryResp>> resp = new CommonResp<>();
@@ -41,11 +43,16 @@ public class DocController {
         return resp;
     }
 
-    @DeleteMapping("/delete/{id}")
-    public CommonResp delete(@PathVariable Long id) {
+    @DeleteMapping("/delete/{idStr}")
+    public CommonResp delete(@PathVariable String idStr) {
         CommonResp resp = new CommonResp<>();
-        System.out.println("当前获取的id为："+id);//error
-        docService.deleteBook(id);
+        if (idStr.isEmpty()) {
+            resp.setSuccess(false);
+        } else {
+            List<String> list = Arrays.asList(idStr.split(","));
+            docService.deleteBook(list);
+        }
         return resp;
+
     }
 }
