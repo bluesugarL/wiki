@@ -93,7 +93,8 @@ values (502, 500, '开发工具', 100);
 insert into `category`(id, parent, name, sort)
 values (503, 500, '热门服务器语言', 100);
 
-create table if not exists `doc`
+drop table if exists `doc`;
+create table `doc`
 (
     `id`         bigint      not null comment 'id',
     `ebook_id`   bigint      not null default 0 comment '电子书id',

@@ -25,17 +25,16 @@
           </template>
           <template v-slot:action="{ text, record }">
             <a-space size="small">
-              <a-button type="primary" @click="edit(record)">
+              <a-button type="primary" @click="edit(record)" size="small">
                 编辑
               </a-button>
-
               <a-popconfirm
                   title="删除后不可恢复，确认删除?"
                   ok-text="是"
                   cancel-text="否"
-                  @confirm="deleteBook(record.id)"
+                  @confirm="handleDelete(record.id)"
               >
-                <a-button type="danger">
+                <a-button type="danger" size="small">
                   删除
                 </a-button>
               </a-popconfirm>
@@ -72,24 +71,31 @@
       <a-form-item label="排序">
         <a-input v-model:value="doc.sort"/>
       </a-form-item>
+      <a-form-item label="内容">
+        <div id="content">
+
+        </div>
+      </a-form-item>
     </a-form>
   </a-modal>
 </template>
 
 
 <script lang="ts">
-import {defineComponent, onMounted, ref} from 'vue';
+import {createVNode, defineComponent, onMounted, ref,} from 'vue';
 import axios from 'axios';
-import {message} from "ant-design-vue";
+import {message, Modal} from "ant-design-vue";
 import {Tool} from "@/util/tool";
+import ExclamationCircleOutlined from "@ant-design/icons-vue/ExclamationCircleOutlined";
 import {useRoute} from "vue-router";
+import E from "wangeditor";
 
 
 export default defineComponent({
       name: 'AdminDoc',
       setup() {
         //获取路由
-        const route=useRoute();
+        const route = useRoute();
         console.log(route)
 
         const param = ref();
@@ -134,7 +140,7 @@ export default defineComponent({
         //数据查询
         const handleQuery = () => {
           loading.value = true;
-          level1.value=[];
+          level1.value = [];
           axios.get("/doc/all").then((response) => {
             loading.value = false;
             const data = response.data;
@@ -153,11 +159,13 @@ export default defineComponent({
 
 
         //--------表单----------
-        const treeSelectData=ref();
-        treeSelectData.value=[];
+        const treeSelectData = ref();
+        treeSelectData.value = [];
         const doc = ref();
         const modalVisible = ref(false);
         const modalLoading = ref(false);
+        const editor = new E('#content');
+
 
         //保存
         const handleModalOk = () => {
@@ -206,8 +214,35 @@ export default defineComponent({
           }
         };
 
+        //删除二次确认
+        //todo 二次确认弹窗无法取消
+        const handleDelete = (id: number) => {
+          // console.log(level1, level1.value, id)
+          // 清空数组，否则多次删除时，数组会一直增加
+          deleteIds.length = 0;
+          deleteNames.length = 0;
+          getDeleteIds(level1.value, id);
+          Modal.confirm({
+            title: '重要提醒',
+            icon: createVNode(ExclamationCircleOutlined),
+            content: '将删除：【' + deleteNames.join("，") + "】删除后不可恢复，确认删除？",
+            onOk() {
+              // console.log(ids)
+              axios.delete("/doc/delete/" + deleteIds.join(",")).then((response) => {
+                const data = response.data; // data = commonResp
+                if (data.success) {
+                  // 重新加载列表
+                  handleQuery();
+                } else {
+                  message.error(data.message);
+                }
+              });
+            },
+          });
+        };
 
-        const ids:Array<string>=[];
+        const deleteIds: Array<string> = [];
+        const deleteNames: Array<string> = [];
         const getDeleteIds = (treeSelectData: any, id: any) => {
           // console.log(treeSelectData, id);
           // 遍历数组，即遍历某一层节点
@@ -218,7 +253,7 @@ export default defineComponent({
               console.log("disabled", node);
               // 将目标节点设置为disabled
               node.disabled = true;
-              ids.push(id);
+              deleteIds.push(id);
 
               // 遍历所有子节点，将所有子节点全部都加上disabled
               const children = node.children;
@@ -249,24 +284,31 @@ export default defineComponent({
 
           // 为选择树添加一个"无"
           treeSelectData.value.unshift({id: 0, name: '无'});
+          setTimeout(function () {
+            editor.create();
+          },100)
         };
 
         //新增
         const add = () => {
+
           modalVisible.value = true;
           doc.value = {
-            ebookId:route.query.ebookId
+            ebookId: route.query.ebookId
           }
 
           treeSelectData.value = Tool.copy(level1.value);
           // 为选择树添加一个"无"
           treeSelectData.value.unshift({id: 0, name: '无'});
+          setTimeout(function () {
+            editor.create();
+          },100)
         };
 
         //删除
         const deleteBook = (id: number) => {
-          getDeleteIds(level1.value,id);
-          axios.delete("/doc/delete/"+ids.join(",")).then((response) => {
+          getDeleteIds(level1.value, id);
+          axios.delete("/doc/delete/" + deleteIds.join(",")).then((response) => {
             const data = response.data;
             if (data.success) {
               //刷新当前列表
@@ -289,6 +331,8 @@ export default defineComponent({
           loading,
           deleteBook,
           handleQuery,
+
+          handleDelete,
 
           edit,
           add,
