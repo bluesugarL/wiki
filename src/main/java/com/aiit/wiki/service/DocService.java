@@ -86,18 +86,27 @@ public class DocService {
             //更新
             docMapper.updateByPrimaryKey(doc);
             //包含大字段的更新
-            int count= contentMapper.updateByPrimaryKeyWithBLOBs(content);
-            if (count==0){
+            int count = contentMapper.updateByPrimaryKeyWithBLOBs(content);
+            if (count == 0) {
                 contentMapper.insert(content);
             }
         }
     }
 
-    public void deleteBook(List<String> ids){
+    public void deleteBook(List<String> ids) {
         DocExample docExample = new DocExample();
         //创建内部类
         DocExample.Criteria criteria = docExample.createCriteria();
         criteria.andIdIn(ids);
         docMapper.deleteByExample(docExample);
+    }
+
+    public String findContent(Long id) {
+        Content content = contentMapper.selectByPrimaryKey(id);
+        if (ObjectUtils.isEmpty(content)) {
+            return "";
+        } else {
+            return content.getContent();
+        }
     }
 }
