@@ -195,7 +195,8 @@ export default defineComponent({
             modalLoading.value = false;
             const data = response.data;
             if (data.success) {
-              modalVisible.value = false;
+              // modalVisible.value = false;
+              message.success("保存成功！")
               //刷新当前列表
               handleQuery();
             } else {
@@ -311,6 +312,7 @@ export default defineComponent({
 
         //编辑
         const edit = (record: any) => {
+          editor.txt.html("");
           modalVisible.value = true;
           //实现编辑时复制对象，修改表单不影响数据
           doc.value = Tool.copy(record);
@@ -325,7 +327,7 @@ export default defineComponent({
 
         //新增
         const add = () => {
-
+          editor.txt.html("");
           modalVisible.value = true;
           doc.value = {
             ebookId: route.query.ebookId
