@@ -1,7 +1,9 @@
 package com.aiit.wiki.service;
 
+import com.aiit.wiki.domain.Content;
 import com.aiit.wiki.domain.Doc;
 import com.aiit.wiki.domain.DocExample;
+import com.aiit.wiki.mapper.ContentMapper;
 import com.aiit.wiki.mapper.DocMapper;
 import com.aiit.wiki.req.DocQueryReq;
 import com.aiit.wiki.req.DocSaveReq;
@@ -24,6 +26,9 @@ public class DocService {
 
     @Resource
     private DocMapper docMapper;
+
+    @Resource
+    private ContentMapper contentMapper;
 
     @Resource
     private SnowFlake snowFlake;
@@ -68,14 +73,23 @@ public class DocService {
      */
     public void save(DocSaveReq req) {
         Doc doc = CopyUtil.copy(req, Doc.class);
+        Content content = CopyUtil.copy(req, Content.class);
         if (ObjectUtils.isEmpty(req.getId())) {
             //新增
             doc.setId(snowFlake.nextId());
-            System.out.println("雪花生成ID："+doc.getId());//right
             docMapper.insert(doc);
+
+            //新增
+            content.setId(doc.getId());
+            contentMapper.insert(content);
         } else {
             //更新
             docMapper.updateByPrimaryKey(doc);
+            //包含大字段的更新
+            int count= contentMapper.updateByPrimaryKeyWithBLOBs(content);
+            if (count==0){
+                contentMapper.insert(content);
+            }
         }
     }
 
