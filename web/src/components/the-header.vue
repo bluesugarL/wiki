@@ -11,9 +11,9 @@
         <router-link to="/">首页</router-link>
       </a-menu-item>
       <a-menu-item key="user">
-        <router-link to="/admin/user">用户管理</router-link>
+        <router-link to="/admin/user" >用户管理</router-link>
       </a-menu-item>
-      <a-menu-item key="ebook">
+      <a-menu-item key="ebook" >
         <router-link to="/admin/ebook">电子书管理</router-link>
       </a-menu-item>
       <a-menu-item key="category">
@@ -22,6 +22,20 @@
       <a-menu-item key="about">
         <router-link to="/about">关于我们</router-link>
       </a-menu-item>
+
+      <a-menu-item key="loginout" style="margin-left:950px;">
+        <a-popconfirm
+            title="确认退出登录?"
+            ok-text="是"
+            cancel-text="否"
+            @confirm="logout()"
+        >
+          <a class="login-menu" v-show="user.id">
+            <span>退出登录</span>
+          </a>
+        </a-popconfirm>
+      </a-menu-item>
+
       <a-menu-item key="login" style="margin-left:auto;">
         <a class="login-menu" v-show="user.id">
           <span>您好：{{ user.name }}</span>
@@ -60,14 +74,15 @@ declare let hexMd5: any;
 declare let KEY: any;
 
 
+
 export default defineComponent({
   name: 'the-header',
 
   setup() {
     // 用来登录
     const loginUser = ref({
-      loginName: "test",
-      password: "test123"
+      loginName: "",
+      password: ""
     });
 
     const user = computed(() => {
@@ -98,13 +113,24 @@ export default defineComponent({
       });
     };
 
+    // 退出登录
+    const logout = () => {
+      console.log("退出登录开始");
+          message.success("退出登录成功！");
+          // 清除 Vuex store 中的用户数据
+          store.commit("setUser", {});
+    };
+
+
+
     return {
       loginModalVisible,
       loginModalLoading,
       showLoginModal,
       loginUser,
       login,
-      user
+      user,
+      logout
     }
   }
 });
@@ -128,4 +154,7 @@ export default defineComponent({
   color: white;
   padding-left: 10px;
 }
+
+
+
 </style>

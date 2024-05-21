@@ -17,6 +17,11 @@
 
         <a-col :span="18">
           <div class="wangeditor" :innerHTML="html"></div>
+          <div class="vote-div">
+            <a-button type="primary" shape="round" :size="'large'" @click="vote">
+              <template #icon><LikeOutlined /> &nbsp;点赞：{{doc.voteCount}} </template>
+            </a-button>
+          </div>
         </a-col>
       </a-row>
     </a-layout-content>
@@ -40,7 +45,8 @@ export default defineComponent({
     defaultSelectedKeys.value = [];
     // 当前选中的文档
     const doc = ref();
-    doc.value = {};
+    doc.value = {
+    };
 
     const level1 = ref(); // 一级文档树，children属性就是二级文档
     level1.value = []
@@ -82,6 +88,7 @@ export default defineComponent({
             handleQueryContent(level1.value[0].id);
             // 初始显示文档信息
             doc.value = level1.value[0];
+            console.log(doc.value);
           }
         } else {
           message.error(data.message);
@@ -102,6 +109,17 @@ export default defineComponent({
       }
     };
 
+    // 点赞
+    const vote = () => {
+      axios.get('/doc/vote/' + doc.value.id).then((response) => {
+        const data = response.data;
+        if (data.success) {
+          doc.value.voteCount++;
+        } else {
+          message.error(data.message);
+        }
+      });
+    };
 
     onMounted(() => {
       handleQuery();
@@ -111,6 +129,7 @@ export default defineComponent({
       level1,
       doc,
       html,
+      vote,
       onSelect,
       defaultSelectedKeys,
     }

@@ -86,7 +86,7 @@
     </if>
   </select>
   <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from doc
     where id = #{id,jdbcType=BIGINT}
@@ -102,12 +102,12 @@
     </if>
   </delete>
   <insert id="insert" parameterType="com.aiit.wiki.domain.Doc">
-    insert into doc (id, ebook_id, parent, 
-      `name`, sort, view_count, 
-      vote_count)
-    values (#{id,jdbcType=BIGINT}, #{ebookId,jdbcType=BIGINT}, #{parent,jdbcType=BIGINT}, 
-      #{name,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER}, #{viewCount,jdbcType=INTEGER}, 
-      #{voteCount,jdbcType=INTEGER})
+    insert into doc (id, ebook_id, parent,
+                     `name`, sort, view_count,
+                     vote_count)
+    values (#{id,jdbcType=BIGINT}, #{ebookId,jdbcType=BIGINT}, #{parent,jdbcType=BIGINT},
+            #{name,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER}, #{viewCount,jdbcType=INTEGER},
+            #{voteCount,jdbcType=INTEGER})
   </insert>
   <insert id="insertSelective" parameterType="com.aiit.wiki.domain.Doc">
     insert into doc
@@ -196,12 +196,12 @@
   <update id="updateByExample" parameterType="map">
     update doc
     set id = #{record.id,jdbcType=BIGINT},
-      ebook_id = #{record.ebookId,jdbcType=BIGINT},
-      parent = #{record.parent,jdbcType=BIGINT},
-      `name` = #{record.name,jdbcType=VARCHAR},
-      sort = #{record.sort,jdbcType=INTEGER},
-      view_count = #{record.viewCount,jdbcType=INTEGER},
-      vote_count = #{record.voteCount,jdbcType=INTEGER}
+    ebook_id = #{record.ebookId,jdbcType=BIGINT},
+    parent = #{record.parent,jdbcType=BIGINT},
+    `name` = #{record.name,jdbcType=VARCHAR},
+    sort = #{record.sort,jdbcType=INTEGER},
+    view_count = #{record.viewCount,jdbcType=INTEGER},
+    vote_count = #{record.voteCount,jdbcType=INTEGER}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -233,11 +233,11 @@
   <update id="updateByPrimaryKey" parameterType="com.aiit.wiki.domain.Doc">
     update doc
     set ebook_id = #{ebookId,jdbcType=BIGINT},
-      parent = #{parent,jdbcType=BIGINT},
-      `name` = #{name,jdbcType=VARCHAR},
-      sort = #{sort,jdbcType=INTEGER},
-      view_count = #{viewCount,jdbcType=INTEGER},
-      vote_count = #{voteCount,jdbcType=INTEGER}
+        parent = #{parent,jdbcType=BIGINT},
+        `name` = #{name,jdbcType=VARCHAR},
+        sort = #{sort,jdbcType=INTEGER},
+        view_count = #{viewCount,jdbcType=INTEGER},
+        vote_count = #{voteCount,jdbcType=INTEGER}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

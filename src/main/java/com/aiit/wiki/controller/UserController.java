@@ -80,4 +80,11 @@ public class UserController {
         resp.setContent(userLoginResp);
         return resp;
     }
+
+    @DeleteMapping("/logout/{token}")
+    public CommonResp logout(@PathVariable Long token) {
+        CommonResp resp = new CommonResp<>();
+        resp.setSuccess(true);
+        return resp;
+    }
 }

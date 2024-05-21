@@ -5,6 +5,7 @@ import com.aiit.wiki.domain.Doc;
 import com.aiit.wiki.domain.DocExample;
 import com.aiit.wiki.mapper.ContentMapper;
 import com.aiit.wiki.mapper.DocMapper;
+import com.aiit.wiki.mapper.DocMapperCust;
 import com.aiit.wiki.req.DocQueryReq;
 import com.aiit.wiki.req.DocSaveReq;
 import com.aiit.wiki.resp.DocQueryResp;
@@ -29,6 +30,9 @@ public class DocService {
 
     @Resource
     private ContentMapper contentMapper;
+
+    @Resource
+    private DocMapperCust docMapperCust;
 
     @Resource
     private SnowFlake snowFlake;
@@ -81,6 +85,8 @@ public class DocService {
         if (ObjectUtils.isEmpty(req.getId())) {
             //新增
             doc.setId(snowFlake.nextId());
+            doc.setViewCount(0);
+            doc.setVoteCount(0);
             docMapper.insert(doc);
 
             //新增
@@ -107,10 +113,16 @@ public class DocService {
 
     public String findContent(Long id) {
         Content content = contentMapper.selectByPrimaryKey(id);
+        //文档阅读数加1
+        docMapperCust.increateViewCount(id);
         if (ObjectUtils.isEmpty(content)) {
             return "";
         } else {
             return content.getContent();
         }
+    }
+
+    public void vote(Long id){
+        docMapperCust.increateViewCount(id);
     }
 }
