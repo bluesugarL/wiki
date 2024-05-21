@@ -5,10 +5,12 @@ import com.aiit.wiki.domain.UserExample;
 import com.aiit.wiki.exception.BusinessException;
 import com.aiit.wiki.exception.BusinessExceptionCode;
 import com.aiit.wiki.mapper.UserMapper;
+import com.aiit.wiki.req.UserLoginReq;
 import com.aiit.wiki.req.UserQueryReq;
 import com.aiit.wiki.req.UserResetPasswordReq;
 import com.aiit.wiki.req.UserSaveReq;
 import com.aiit.wiki.resp.PageResp;
+import com.aiit.wiki.resp.UserLoginResp;
 import com.aiit.wiki.resp.UserQueryResp;
 import com.aiit.wiki.util.CopyUtil;
 import com.aiit.wiki.util.SnowFlake;
@@ -119,4 +121,25 @@ public class UserService {
         User user = CopyUtil.copy(req, User.class);
         userMapper.updateByPrimaryKeySelective(user);
     }
+
+    //登录
+    public UserLoginResp login(UserLoginReq req) {
+        User userDB = selectByLoginName(req.getLoginName());
+        if (ObjectUtils.isEmpty(userDB)){
+            //用户名不存在
+            LOG.info("用户名不存在!");
+            throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
+        }else{
+            if (userDB.getPassword().equals(req.getPassword())){
+                UserLoginResp resp = CopyUtil.copy(userDB, UserLoginResp.class);
+                return resp;
+            }else {
+                //密码错误
+                LOG.info("密码错误!,输入密码：{}，数据库密码：{}",req.getPassword(),userDB.getPassword());
+                throw new BusinessException(BusinessExceptionCode.LOGIN_USER_ERROR);
+            }
+        }
+    }
+
+
 }
