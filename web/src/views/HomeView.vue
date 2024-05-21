@@ -37,9 +37,9 @@
         <template #renderItem="{ item }">
           <a-list-item key="item.name">
             <template #actions>
-              <span v-for="{ type, text } in actions" :key="type">
-                <component :is="type" style="margin-right: 8px"/>
-                {{ text }}
+              <span >
+                <component v-bind:is="'LikeOutlined'" style="margin-right: 8px"/>
+                {{ item.voteCount }}
               </span>
             </template>
 
