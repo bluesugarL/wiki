@@ -18,9 +18,9 @@
         <a-col :span="18">
           <div class="wangeditor" :innerHTML="html"></div>
           <div class="vote-div">
-            <a-button type="primary" shape="round" :size="'large'" @click="vote">
-              <template #icon><LikeOutlined /> &nbsp;点赞：{{doc.voteCount}} </template>
-            </a-button>
+            <!--<a-button type="primary"  shape="round" :size="'large'" @click="vote" style="height: 60px">-->
+            <!--  <template #icon><LikeOutlined /> &nbsp;点赞 </template>-->
+            <!--</a-button>-->
           </div>
         </a-col>
       </a-row>
@@ -100,7 +100,7 @@ export default defineComponent({
     };
 
     const onSelect = (selectedKeys: any, info: any) => {
-      console.log('selected', selectedKeys, info);
+      console.log('selected,selectedKeys{} , info{}', selectedKeys, info);
       if (Tool.isNotEmpty(selectedKeys)) {
         // 选中某一节点时，加载该节点的文档信息
         doc.value = info.selectedNodes[0].props;
@@ -115,6 +115,7 @@ export default defineComponent({
         const data = response.data;
         if (data.success) {
           doc.value.voteCount++;
+          message.success("点赞成功")
         } else {
           message.error(data.message);
         }
@@ -195,7 +196,7 @@ export default defineComponent({
 
 /* 点赞 */
 .vote-div {
-  padding: 15px;
+  padding: 5px;
   text-align: center;
 }
 

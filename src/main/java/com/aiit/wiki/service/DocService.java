@@ -123,6 +123,10 @@ public class DocService {
     }
 
     public void vote(Long id){
-        docMapperCust.increateViewCount(id);
+        docMapperCust.increateVoteCount(id);
+    }
+
+    public void updateEbookInfo(){
+        docMapperCust.updateEbookInfo();
     }
 }

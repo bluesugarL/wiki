@@ -131,7 +131,7 @@ create table content
   default charset = utf8mb4 comment = '文档内容';
 
 -- 用户表
-drop table if exists `user`
+drop table if exists `user`;
 create table `user`
 (
     `id`         bigint      not null comment 'ID',
@@ -141,4 +141,27 @@ create table `user`
     primary key (`id`),
     unique key `login_name_unique` (login_name)
 ) engine = innodb
-  default charset = utf8mb4 comment = '用户'
+  default charset = utf8mb4 comment = '用户';
+
+drop table if exists `ebook_snapshot`;
+create table ebook_snapshot
+(
+    id            bigint auto_increment not null comment 'id',
+    ebook_id      bigint                not null default 0 comment '电子书id',
+    date          date                  not null comment '快照日期',
+    view_count    int                   not null default 0 comment '阅读数',
+    vote_count    int                   not null default 0 comment '点赞数',
+    view_increase int                   not null default 0 comment '阅读增长',
+    vote_increase int                   not null default 0 comment '点赞增长',
+    primary key (`id`),
+    unique key `ebook_id_date_unique` (`ebook_id`,`date`)
+)engine=innodb default charset=utf8mb4 comment='电子书快照表';
+
+
+select ebook_id, count(1) doc_count, sum(view_count) view_count,
+       sum(vote_count) vote_count from doc group by ebook_id;
+
+update ebook t1, (select ebook_id, count(1) doc_count, sum(view_count) view_count,
+                         sum(vote_count) vote_count from doc group by ebook_id) t2
+set t1.doc_count = t2.doc_count, t1.view_count = t2.view_count, t1.vote_count = t2.vote_count
+where t1.id = t2.ebook_id
