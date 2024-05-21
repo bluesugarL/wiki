@@ -34,7 +34,7 @@ const routes: Array<RouteRecordRaw> = [
     },
     {
         path: '/doc',
-        name: 'Doc',
+        name: 'DocView',
         component: DocView
     }
 ]

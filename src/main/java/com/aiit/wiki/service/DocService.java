@@ -35,13 +35,17 @@ public class DocService {
 
     private static final Logger logger = LoggerFactory.getLogger(DocService.class);
 
-    public List<DocQueryResp> allList() {
+    public List<DocQueryResp> allList(Long ebookId) {
         DocExample docExample = new DocExample();
+        DocExample.Criteria criteria = docExample.createCriteria();
+        criteria.andEbookIdEqualTo(ebookId);
         docExample.setOrderByClause("sort asc");
+
         List<Doc> docList = docMapper.selectByExample(docExample);
         List<DocQueryResp> respList = CopyUtil.copyList(docList, DocQueryResp.class);
         return respList;
     }
+
 
     //参数不直接使用实体类doc
     public PageResp<DocQueryResp> list(DocQueryReq docReq) {

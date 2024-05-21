@@ -20,10 +20,11 @@ public class DocController {
     @Resource
     private DocService docService;
 
-    @GetMapping("/all")
-    public CommonResp allList() {
+    @GetMapping("/all/{ebookId}")
+    public CommonResp allList(@PathVariable Long ebookId) {
         CommonResp<List<DocQueryResp>> resp = new CommonResp<>();
-        List<DocQueryResp> list = docService.allList();
+        List<DocQueryResp> list = docService.allList(ebookId);
+        System.out.println(list.toString());
         resp.setContent(list);
         return resp;
     }

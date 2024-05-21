@@ -24,10 +24,12 @@
               :pagination="false"
               size="small"
               :default-expand-all-rows="true"
-              bordered>
+              bordered
+          >
             <template #name="{ text,record}">
               {{ record.sort }} {{ text }}
             </template>
+
             <template v-slot:action="{ text, record }">
               <a-space size="small">
                 <a-button type="primary" @click="edit(record)" size="small">
@@ -88,6 +90,14 @@
           </a-form>
         </a-col>
       </a-row>
+
+      <a-drawer width="900"
+                placement="right"
+                :closable="false"
+                :visible="drawerVisible"
+                @close="onDrawerClose">
+        <div class="wangeditor" :innerHTML="previewHtml"></div>
+      </a-drawer>
     </a-layout-content>
   </a-layout>
   <!--<a-modal-->
@@ -117,11 +127,18 @@ export default defineComponent({
         //获取路由
         const route = useRoute();
         console.log(route)
+        const treeSelectData = ref();
+        treeSelectData.value = [];
 
         const param = ref();
         param.value = {};
         const docs = ref();
         const loading = ref(false);
+
+        const doc = ref();
+        doc.value = {
+          ebookId: route.query.ebookId
+        };
 
         const columns = [
           {
@@ -153,7 +170,7 @@ export default defineComponent({
         const handleQuery = () => {
           loading.value = true;
           level1.value = [];
-          axios.get("/doc/all").then((response) => {
+          axios.get("/doc/all/" + route.query.ebookId).then((response) => {
             loading.value = false;
             const data = response.data;
             if (data.success) {
@@ -163,6 +180,12 @@ export default defineComponent({
               //递归
               level1.value = Tool.array2Tree(docs.value, 0);
               console.log("树形结构：", level1);
+
+              // 父文档下拉框初始化，相当于点击新增
+              treeSelectData.value = Tool.copy(level1.value) || [];
+              // 为选择树添加一个"无"
+              treeSelectData.value.unshift({id: 0, name: '无'});
+
             } else {
               message.error(data.message)
             }
@@ -170,15 +193,7 @@ export default defineComponent({
         };
 
 
-
-
         //--------表单----------
-        const treeSelectData = ref();
-        treeSelectData.value = [];
-        const doc = ref();
-        doc.value = {
-          ebookId: route.query.ebookId
-        };
         const modalVisible = ref(false);
         const modalLoading = ref(false);
 
@@ -250,7 +265,7 @@ export default defineComponent({
             content: '将删除：【' + deleteNames.join(",") + "】删除后不可恢复，确认删除？",
             onOk() {
               console.log(id)
-              axios.delete("/doc/delete/" + deleteIds.join(",")).then((response) => {
+              return axios.delete("/doc/delete/" + deleteIds.join(",")).then((response) => {
                 const data = response.data; // data = commonResp
                 if (data.success) {
                   // 重新加载列表
@@ -258,6 +273,9 @@ export default defineComponent({
                 } else {
                   message.error(data.message);
                 }
+              }).catch((error)=>{
+                console.error('Delete Failed',error);
+                message.error('删除失败')
               });
             },
           });
@@ -273,10 +291,11 @@ export default defineComponent({
             const node = treeSelectData[i];
             if (node.id === id) {
               // 如果当前节点就是目标节点
-              console.log("disabled", node);
+              console.log("delete", node);
               // 将目标节点设置为disabled
-              node.disabled = true;
+              // node.disabled = true;
               deleteIds.push(id);
+              deleteNames.push(node.name);
 
               // 遍历所有子节点，将所有子节点全部都加上disabled
               const children = node.children;
@@ -299,7 +318,7 @@ export default defineComponent({
          * 内容查询
          */
         const handleQueryContent = () => {
-          axios.get("/doc/find-content/"+doc.value.id).then((response) => {
+          axios.get("/doc/find-content/" + doc.value.id).then((response) => {
             loading.value = false;
             const data = response.data;
             if (data.success) {
@@ -352,6 +371,18 @@ export default defineComponent({
           });
         };
 
+        // ----------------富文本预览--------------
+        const drawerVisible = ref(false);
+        const previewHtml = ref();
+        const handlePreviewContent = () => {
+          const html = editor.txt.html();
+          previewHtml.value = html;
+          drawerVisible.value = true;
+        };
+        const onDrawerClose = () => {
+          drawerVisible.value = false;
+        };
+
 
         onMounted(() => {
           handleQuery();
@@ -376,7 +407,12 @@ export default defineComponent({
           modalLoading,
           handleSave,
 
-          treeSelectData
+          treeSelectData,
+
+          drawerVisible,
+          previewHtml,
+          handlePreviewContent,
+          onDrawerClose,
         }
       }
     }
