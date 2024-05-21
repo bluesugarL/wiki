@@ -6,6 +6,7 @@ import com.aiit.wiki.exception.BusinessException;
 import com.aiit.wiki.exception.BusinessExceptionCode;
 import com.aiit.wiki.mapper.UserMapper;
 import com.aiit.wiki.req.UserQueryReq;
+import com.aiit.wiki.req.UserResetPasswordReq;
 import com.aiit.wiki.req.UserSaveReq;
 import com.aiit.wiki.resp.PageResp;
 import com.aiit.wiki.resp.UserQueryResp;
@@ -86,6 +87,7 @@ public class UserService {
         } else {
             //更新
             user.setLoginName(null);
+            user.setPassword(null);
             userMapper.updateByPrimaryKeySelective(user);
         }
     }
@@ -107,5 +109,14 @@ public class UserService {
         else {
             return userList.get(0);
         }
+    }
+
+    /**
+     * 重置密码
+     * @param req
+     */
+    public void resetPassword(UserResetPasswordReq req) {
+        User user = CopyUtil.copy(req, User.class);
+        userMapper.updateByPrimaryKeySelective(user);
     }
 }

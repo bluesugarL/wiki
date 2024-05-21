@@ -1,6 +1,7 @@
 package com.aiit.wiki.controller;
 
 import com.aiit.wiki.req.UserQueryReq;
+import com.aiit.wiki.req.UserResetPasswordReq;
 import com.aiit.wiki.req.UserSaveReq;
 import com.aiit.wiki.resp.CommonResp;
 import com.aiit.wiki.resp.PageResp;
@@ -41,6 +42,14 @@ public class UserController {
         CommonResp resp = new CommonResp<>();
         System.out.println("当前获取的id为："+id);//error
         userService.deleteBook(id);
+        return resp;
+    }
+
+    @PostMapping("/reset-password")
+    public CommonResp resetPassword(@Valid @RequestBody UserResetPasswordReq req) {
+        req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
+        CommonResp resp = new CommonResp<>();
+        userService.resetPassword(req);
         return resp;
     }
 }
