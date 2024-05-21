@@ -9,6 +9,10 @@ import com.aiit.wiki.resp.PageResp;
 import com.aiit.wiki.resp.UserLoginResp;
 import com.aiit.wiki.resp.UserQueryResp;
 import com.aiit.wiki.service.UserService;
+import com.aiit.wiki.util.SnowFlake;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +25,14 @@ public class UserController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private RedisTemplate redisTemplate;
+
+    @Resource
+    private SnowFlake snowFlake;
+
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     @GetMapping("/list")
     public CommonResp list(@Valid UserQueryReq userReq) {
@@ -59,6 +71,12 @@ public class UserController {
         req.setPassword(DigestUtils.md5DigestAsHex(req.getPassword().getBytes()));
         CommonResp<UserLoginResp> resp = new CommonResp<>();
         UserLoginResp userLoginResp =userService.login(req);
+
+        //Long token = snowFlake.nextId();
+        //logger.info("生成单点登录token{},并放入redis中",token);
+        //userLoginResp.setToken(token.toString());
+        //redisTemplate.opsForValue().set(token,userLoginResp,3600*24, TimeUnit.SECONDS);
+
         resp.setContent(userLoginResp);
         return resp;
     }

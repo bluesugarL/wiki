@@ -23,7 +23,10 @@
         <router-link to="/about">关于我们</router-link>
       </a-menu-item>
       <a-menu-item key="login" style="margin-left:auto;">
-        <a @click="showLoginModal" class="login-menu">
+        <a class="login-menu" v-show="user.id">
+          <span>您好：{{ user.name }}</span>
+        </a>
+        <a @click="showLoginModal" class="login-menu" v-show="!user.id">
           <span>登录</span>
         </a>
       </a-menu-item>
@@ -48,7 +51,10 @@
 </template>
 
 <script lang="ts">
-import {defineComponent, ref} from 'vue';
+import {computed, defineComponent, ref} from 'vue';
+import axios from 'axios';
+import {message} from 'ant-design-vue';
+import store from "@/store";
 
 declare let hexMd5: any;
 declare let KEY: any;
@@ -61,8 +67,12 @@ export default defineComponent({
     // 用来登录
     const loginUser = ref({
       loginName: "test",
-      password: "test"
+      password: "test123"
     });
+
+    const user = computed(() => {
+      return store.state.user;
+    })
 
     const loginModalVisible = ref(false);
     const loginModalLoading = ref(false);
@@ -73,6 +83,19 @@ export default defineComponent({
     // 登录
     const login = () => {
       console.log("开始登录");
+      loginModalLoading.value = true;
+      loginUser.value.password = hexMd5(loginUser.value.password + KEY);
+      axios.post('/user/login', loginUser.value).then((response) => {
+        loginModalLoading.value = false;
+        const data = response.data;
+        if (data.success) {
+          loginModalVisible.value = false;
+          message.success("登录成功！");
+          store.commit("setUser", data.content);
+        } else {
+          message.error(data.message);
+        }
+      });
     };
 
     return {
@@ -81,6 +104,7 @@ export default defineComponent({
       showLoginModal,
       loginUser,
       login,
+      user
     }
   }
 });
